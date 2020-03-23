@@ -21,7 +21,7 @@ promotionRouter
       )
       .catch(err => next(err));
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Promo.create(req.body)
       .then(
         promo => {
@@ -37,18 +37,22 @@ promotionRouter
     res.statusCode = 403;
     res.end("Put operation not supported on /promotions");
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
-    Promo.remove({})
-      .then(
-        resp => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      Promo.remove({})
+        .then(
+          resp => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 promotionRouter
   .route("/:promoId")
@@ -68,7 +72,7 @@ promotionRouter
     res.statusCode = 403;
     res.end("Post operation is not supported on /promotion/promoId");
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Promo.findByIdAndUpdate(
       req.params.promoId,
       {
@@ -86,17 +90,21 @@ promotionRouter
       )
       .catch(err => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
-    Promo.findByIdAndRemove(req.params.promoId)
-      .then(
-        resp => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      Promo.findByIdAndRemove(req.params.promoId)
+        .then(
+          resp => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 module.exports = promotionRouter;

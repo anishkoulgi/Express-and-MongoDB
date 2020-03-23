@@ -22,7 +22,7 @@ leaderRouter
       )
       .catch(err => next(err));
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     leader
       .create(req.body)
       .then(
@@ -39,19 +39,23 @@ leaderRouter
     res.statusCode = 403;
     res.end("Put operation not supported on /leaders");
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
-    leader
-      .remove({})
-      .then(
-        resp => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      leader
+        .remove({})
+        .then(
+          resp => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 leaderRouter
   .route("/:leaderId")
@@ -72,7 +76,7 @@ leaderRouter
     res.statusCode = 403;
     res.end("Post operation is not supported on /leaders/leaderId");
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     leader
       .findByIdAndUpdate(
         req.params.leaderId,
@@ -91,18 +95,22 @@ leaderRouter
       )
       .catch(err => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
-    leader
-      .findByIdAndRemove(req.params.leaderId)
-      .then(
-        resp => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      leader
+        .findByIdAndRemove(req.params.leaderId)
+        .then(
+          resp => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 module.exports = leaderRouter;
